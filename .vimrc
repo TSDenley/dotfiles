@@ -35,9 +35,10 @@ set copyindent "copy the previous indentation on autoindenting
 
 set number " Line numbers
 
-set showcmd " Display last command
+" set showcmd " Display last command
 
-set showmode " Show editing mode
+" set showmode " Show editing mode
+set noshowmode
 
 set mousehide "Hide mouse when typing
 
@@ -69,7 +70,7 @@ imap jj <Esc>
 " Quicker editing of vimrc file...
 nmap \v :e $MYVIMRC<CR>
 " ...and zshrc
-nmap \zsh :e ~/.zshrc<CR>
+nmap \z :e ~/.zshrc<CR>
 
 " Map some window commands - quicker that Ctrl-Shift-W-...
 " Open a new window
@@ -125,22 +126,6 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'gmarik/Vundle.vim'
 
-" The following are examples of different formats supported.
-" Keep Plugin commands between vundle#begin/end.
-" plugin on GitHub repo
-" Plugin 'tpope/vim-fugitive'
-" plugin from http://vim-scripts.org/vim/scripts.html
-" Plugin 'L9'
-" Git plugin not hosted on GitHub
-" Plugin 'git://git.wincent.com/command-t.git'
-" git repos on your local machine (i.e. when working on your own plugin)
-" Plugin 'file:///home/gmarik/path/to/plugin'
-" The sparkup vim script is in a subdirectory of this repo called vim.
-" Pass the path to set the runtimepath properly.
-" Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
-" Avoid a name conflict with L9
-" Plugin 'user/L9', {'name': 'newL9'}
-
 Plugin 'L9'
 Plugin 'scrooloose/nerdtree'
 Plugin 'ervandew/supertab'
@@ -151,26 +136,25 @@ Plugin 'matchit.zip'
 Plugin 'FuzzyFinder'
 Plugin 'pangloss/vim-javascript'
 Plugin 'justinmk/vim-sneak'
+Plugin 'tpope/vim-fugitive'
+Plugin 'flazz/vim-colorschemes'
+
+" Track the engine.
+Plugin 'SirVer/ultisnips'
+
+" Snippets are separated from the engine. Add this if you want them:
+Plugin 'honza/vim-snippets'
+
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
 " To ignore plugin indent changes, instead use:
 "filetype plugin on
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
-
-
-
-" Autocomplete plugin
-" let g:neocomplcache_enable_at_startup = 1
 
 " NERDTree settings
 nmap \n :NERDTreeToggle<CR>

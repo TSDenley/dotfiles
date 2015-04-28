@@ -49,8 +49,8 @@ plugins=(git)
 
 # User configuration
 
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
-# export MANPATH="/usr/local/man:$MANPATH"
+### PATH ####
+PATH=$HOME/bin:/opt/lampp/bin:$PATH
 
 source $ZSH/oh-my-zsh.sh
 
@@ -70,14 +70,13 @@ source $ZSH/oh-my-zsh.sh
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
- alias zshconfig="vim ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+
+alias zshcfg="vim ~/.zshrc"
+alias vimcfg="vim ~/.vimrc"
+
+alias vundle_install="vim +PluginInstall +qall"
+
+alias open="nautilus"
 
 #### GIT ####
 alias gs='git status '
@@ -96,6 +95,22 @@ alias gl='git log'
 alias gl2='git log -p -2' # Shows the last 2 commits with diffs
 alias gh='git log --pretty=format:"%h - %s - %an, %ad" --graph --date=local' # 'One line' formated log
 
-alias gr='cd $(git rev-parse  --show-toplevel)' # cd to working tree root
-alias grm='git rm $(git ls-files --deleted)' # Run 'git rm' on all files marked as deleted
+# cd to working tree root
+alias gr='cd $(git rev-parse  --show-toplevel)'
+# Run 'git rm' on all files marked as deleted
+alias grm='git rm $(git ls-files --deleted)'
+
+#### XAMPP ####
+alias lampp='sudo /opt/lampp/lampp '
+
+alias htdocs='cd /opt/lampp/htdocs/'
+alias matt='cd /opt/lampp/htdocs/matt/'
+
+#### Drush ####
+export DRUSH_PHP=/opt/lampp/bin/php
+alias dcca='drush cc all'
+
+#### Node Version Manager ####
+export NVM_DIR="/home/tom/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
