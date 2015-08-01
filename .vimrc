@@ -6,23 +6,16 @@ set noswapfile " Disable swapfile creation (*.swp files)
 
 filetype plugin on
 
-set linespace=6 "Set line height
+" Set line height
+set linespace=6
 
 " Search optoins
 set incsearch " Search as you type
 set ignorecase
 set smartcase
 set wildmode=longest,list
-
-set hlsearch "Highlight Searching
-
-syntax on " Turn on syntax highlighting
-
-colorscheme desert
-set showmatch
-hi MatchParen cterm=bold ctermbg=none ctermfg=white
-
-set laststatus=2 "Always show the status line
+set hlsearch " Highlight Searching
+set laststatus=2 " Always show the status line
 
 " Tab & indent settings
 set shiftwidth=4
@@ -33,34 +26,34 @@ set smartindent "Auto adds and indent after a '{'
 set autoindent
 set copyindent "copy the previous indentation on autoindenting
 
-set number " Line numbers
+" Line numbers
+set number 
 
-" set showcmd " Display last command
+" Display last command
+set showcmd 
 
 " set showmode " Show editing mode
-set noshowmode
+"set noshowmode
+set showmode
 
-set mousehide "Hide mouse when typing
-
-"Turn off annoying sounds
+" Turn off annoying sounds
 set noerrorbells
 set novisualbell
 set t_vb=
 
-set guioptions-=T " Don't display toolbar
+" Don't display toolbar
+set guioptions-=T 
 
-set hidden "Switch between buffers without saving
+" Switch between buffers without saving
+set hidden 
 
 " Set a different font from the default
 set guifont=Ubuntu\ Mono\ 14
 
-set splitbelow "Split windows below the current window.
+" Split windows below the current window.
+set splitbelow 
 
 " Map commands ----------------------------------------------------------------------------------------- "
-
-" Appends the current date and time after the cursor
-" like this => Sun 27 Feb 2011 21:28:56 GMT
-map <F2> a<C-R>=strftime("%c")<CR><Esc>
 
 " Be quicker - change : for space
 nmap <space> :
@@ -71,20 +64,6 @@ imap jj <Esc>
 nmap \v :e $MYVIMRC<CR>
 " ...and zshrc
 nmap \z :e ~/.zshrc<CR>
-
-" Map some window commands - quicker that Ctrl-Shift-W-...
-" Open a new window
-nmap \w <C-W>n
-" Open a new tab
-nmap \tn :tabnew<CR>
-" Close current window or tab
-nmap \wc <C-W>c
-" Close all other window
-nmap \wo <C-W>o
-" Split current window
-nmap \ws <C-W>s
-" Split current window vertically
-nmap \wv <C-W>v
 
 " Ctrl-s to save...
 nmap <C-s> :w<CR>
@@ -130,7 +109,7 @@ Plugin 'L9'
 Plugin 'scrooloose/nerdtree'
 Plugin 'ervandew/supertab'
 Plugin 'mattn/emmet-vim'
-Plugin 'bling/vim-airline'
+"Plugin 'bling/vim-airline'
 Plugin 'tpope/vim-surround'
 Plugin 'matchit.zip'
 Plugin 'FuzzyFinder'
@@ -138,6 +117,7 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'justinmk/vim-sneak'
 Plugin 'tpope/vim-fugitive'
 Plugin 'flazz/vim-colorschemes'
+Plugin 'altercation/vim-colors-solarized'
 
 " Track the engine.
 Plugin 'SirVer/ultisnips'
@@ -153,8 +133,13 @@ let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
+
+" Colour scheme
+syntax on
+set background=dark
+colorscheme solarized
+highlight Normal ctermbg=NONE
+highlight nonText ctermbg=NONE
 
 " NERDTree settings
 nmap \n :NERDTreeToggle<CR>
