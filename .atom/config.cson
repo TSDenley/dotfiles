@@ -1,0 +1,30 @@
+"*":
+  "exception-reporting":
+    userId: "d9c70154-c602-a139-12f7-dc7df0ed907e"
+  welcome:
+    showOnStartup: false
+  core:
+    themes: [
+      "one-light-ui"
+      "solarized-light-syntax"
+    ]
+    audioBeep: false
+  editor:
+    invisibles: {}
+    softTabs: false
+    softWrap: true
+    preferredLineLength: 999999
+    tabLength: 4
+    lineHeight: 1.8
+    showIndentGuide: true
+    fontSize: 16
+  "git-plus": {}
+  "merge-conflicts": {}
+  "markdown-preview-plus":
+    useGitHubStyle: true
+".html.smarty.text":
+  editor:
+    preferredLineLength: 100
+".diff.source":
+  editor:
+    preferredLineLength: 999999

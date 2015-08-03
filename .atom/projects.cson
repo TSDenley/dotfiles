@@ -1,0 +1,15 @@
+revolution:
+  title: "revolution"
+  paths: [
+    "/opt/lampp/htdocs/matt/revolution"
+  ]
+dnd:
+  title: "dnd"
+  paths: [
+    "/home/tom/dev/dnd"
+  ]
+".oh-my-zsh":
+  title: ".oh-my-zsh"
+  paths: [
+    "/home/tom/.oh-my-zsh"
+  ]
