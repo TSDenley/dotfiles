@@ -6,9 +6,43 @@
 
 @dev-mode-icon: "\f065";
 
+// Edit View
+.project-manager-edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: @base-background-color;
+
+  h1 {
+    color: #d7dae0;
+  }
+
+  .input-label {
+    font-size: 1.2em;
+    display: inline-block;
+    width: 35%;
+  }
+
+  .input-text {
+    display: inline-block;
+    width: 65%;
+  }
+}
+
 .project-manager {}
 
 .project-manager input { width: 100%; }
+
+.project-manager [data-path-missing="true"] {
+  .primary-line,
+  .secondary-line {
+    opacity: 0.4;
+  }
+
+  .secondary-line .icon:before {
+    color: @text-color-warning;
+  }
+}
 
 .project-manager-list-group {
   color: @text-color-subtle;

@@ -1,20 +1,13 @@
 url = require 'url'
+fs = require 'fs-plus'
 
-MarkdownPreviewView = null # Defer until used
-renderer = null # Defer until used
-
-createMarkdownPreviewView = (state) ->
-  MarkdownPreviewView ?= require './markdown-preview-view'
-  new MarkdownPreviewView(state)
+MarkdownPreviewView = null
+renderer = null
+mathjaxHelper = null
 
 isMarkdownPreviewView = (object) ->
   MarkdownPreviewView ?= require './markdown-preview-view'
   object instanceof MarkdownPreviewView
-
-atom.deserializers.add
-  name: 'MarkdownPreviewView'
-  deserialize: (state) ->
-    createMarkdownPreviewView(state) if state.constructor is Object
 
 module.exports =
   config:
@@ -36,14 +29,22 @@ module.exports =
         'source.gfm'
         'source.litcoffee'
         'text.html.basic'
+        'text.md'
         'text.plain'
         'text.plain.null-grammar'
       ]
       order: 30
     enableLatexRenderingByDefault:
+      title: 'Enable Math Rendering By Default'
       type: 'boolean'
       default: false
       order: 40
+    useLazyHeaders:
+      title: 'Use Lazy Headers'
+      description: 'Require no space after headings #'
+      type: 'boolean'
+      default: true
+      order: 45
     useGitHubStyle:
       title: 'Use GitHub.com style'
       type: 'boolean'
@@ -65,7 +66,7 @@ module.exports =
       type: 'array'
       default: []
       title: 'Pandoc Options: Commandline Arguments'
-      description: 'Enter comma seperated pandoc commandline options e.g. `--smart, --normalize` '
+      description: 'Comma separated pandoc arguments e.g. `--smart, --filter=/bin/exe`. Please use long argument names.'
       dependencies: ['enablePandoc']
       order: 120
     pandocMarkdownFlavor:
@@ -96,6 +97,13 @@ module.exports =
       description: 'Name of bibfile to search for recursivly'
       dependencies: ['pandocBibliography']
       order: 160
+    pandocBIBFileFallback:
+      type: 'string'
+      default: ''
+      title: 'Pandoc Options: Fallback Bibliography (bibfile)'
+      description: 'Full path to fallback bibfile'
+      dependencies: ['pandocBibliography']
+      order: 165
     pandocCSLFile:
       type: 'string'
       default: 'custom.csl'
@@ -103,9 +111,21 @@ module.exports =
       description: 'Name of cslfile to search for recursivly'
       dependencies: ['pandocBibliography']
       order: 170
+    pandocCSLFileFallback:
+      type: 'string'
+      default: ''
+      title: 'Pandoc Options: Fallback Bibliography Style (cslfile)'
+      description: 'Full path to fallback cslfile'
+      dependencies: ['pandocBibliography']
+      order: 175
 
 
   activate: ->
+    if parseFloat(atom.getVersion()) < 1.7
+      atom.deserializers.add
+        name: 'MarkdownPreviewView'
+        deserialize: module.exports.createMarkdownPreviewView.bind(module.exports)
+
     atom.commands.add 'atom-workspace',
       'markdown-preview-plus:toggle': =>
         @toggle()
@@ -124,10 +144,7 @@ module.exports =
     atom.commands.add '.tree-view .file .name[data-name$=\\.ron]', 'markdown-preview-plus:preview-file', previewFile
     atom.commands.add '.tree-view .file .name[data-name$=\\.txt]', 'markdown-preview-plus:preview-file', previewFile
 
-    # Call to load MathJax environment
-    require('./mathjax-helper').loadMathJax();
-
-    atom.workspace.addOpener (uriToOpen) ->
+    atom.workspace.addOpener (uriToOpen) =>
       try
         {protocol, host, pathname} = url.parse(uriToOpen)
       catch error
@@ -141,9 +158,14 @@ module.exports =
         return
 
       if host is 'editor'
-        createMarkdownPreviewView(editorId: pathname.substring(1))
+        @createMarkdownPreviewView(editorId: pathname.substring(1))
       else
-        createMarkdownPreviewView(filePath: pathname)
+        @createMarkdownPreviewView(filePath: pathname)
+
+  createMarkdownPreviewView: (state) ->
+    if state.editorId or fs.isFileSync(state.filePath)
+      MarkdownPreviewView ?= require './markdown-preview-view'
+      new MarkdownPreviewView(state)
 
   toggle: ->
     if isMarkdownPreviewView(atom.workspace.getActivePaneItem())
@@ -165,7 +187,11 @@ module.exports =
     uri = @uriForEditor(editor)
     previewPane = atom.workspace.paneForURI(uri)
     if previewPane?
-      previewPane.destroyItem(previewPane.itemForURI(uri))
+      preview = previewPane.itemForURI(uri)
+      if preview isnt previewPane.getActiveItem()
+        previewPane.activateItem(preview)
+        return false
+      previewPane.destroyItem(preview)
       true
     else
       false
@@ -177,7 +203,7 @@ module.exports =
       searchAllPanes: true
     if atom.config.get('markdown-preview-plus.openPreviewInSplitPane')
       options.split = 'right'
-    atom.workspace.open(uri, options).done (markdownPreviewView) ->
+    atom.workspace.open(uri, options).then (markdownPreviewView) ->
       if isMarkdownPreviewView(markdownPreviewView)
         previousActivePane.activate()
 
@@ -191,14 +217,21 @@ module.exports =
 
     atom.workspace.open "markdown-preview-plus://#{encodeURI(filePath)}", searchAllPanes: true
 
-  copyHtml: ->
+  copyHtml: (callback = atom.clipboard.write.bind(atom.clipboard), scaleMath = 100) ->
     editor = atom.workspace.getActiveTextEditor()
     return unless editor?
 
     renderer ?= require './renderer'
     text = editor.getSelectedText() or editor.getText()
-    renderer.toHTML text, editor.getPath(), editor.getGrammar(), false, (error, html) ->
+    renderLaTeX = atom.config.get 'markdown-preview-plus.enableLatexRenderingByDefault'
+    renderer.toHTML text, editor.getPath(), editor.getGrammar(), renderLaTeX, true, (error, html) ->
       if error
         console.warn('Copying Markdown as HTML failed', error)
+      else if renderLaTeX
+        mathjaxHelper ?= require './mathjax-helper'
+        mathjaxHelper.processHTMLString html, (proHTML) ->
+          proHTML = proHTML.replace /MathJax\_SVG.*?font\-size\: 100%/g, (match) ->
+            match.replace /font\-size\: 100%/, "font-size: #{scaleMath}%"
+          callback(proHTML)
       else
-        atom.clipboard.write(html)
+        callback(html)

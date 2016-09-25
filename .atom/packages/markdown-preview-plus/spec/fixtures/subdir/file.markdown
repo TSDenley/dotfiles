@@ -1,4 +1,8 @@
-## File.markdown
+# File.markdown
+
+##Level two header without space
+
+## Level two header with space
 
 :cool:
 
@@ -8,11 +12,13 @@ def func
 end
 ```
 
-* ```javascript
-if a === 3 {
-  b = 5
-}
-```
+*   This is a test
+
+    ```javascript
+    if a === 3 {
+      b = 5
+    }
+    ```
 
 ```
 function f(x) {
@@ -38,7 +44,7 @@ def foo()
 
 ![Image2](/tmp/image2.png)
 
-![Image3](http://github.com/image3.png)
+![Image3](https://raw.githubusercontent.com/Galadirith/markdown-preview-plus/master/assets/hr.png)
 
 lorem
 ipsum

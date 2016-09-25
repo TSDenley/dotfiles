@@ -18,8 +18,8 @@ set hlsearch " Highlight Searching
 set laststatus=2 " Always show the status line
 
 " Tab & indent settings
-set shiftwidth=4
-set tabstop=4
+set shiftwidth=2
+set tabstop=2
 "set expandtab " Spaces for tabs
 set smarttab
 set smartindent "Auto adds and indent after a '{'
@@ -27,13 +27,13 @@ set autoindent
 set copyindent "copy the previous indentation on autoindenting
 
 " Line numbers
-set number 
+"set number
+set nonumber
 
 " Display last command
-set showcmd 
+set showcmd
 
 " set showmode " Show editing mode
-"set noshowmode
 set showmode
 
 " Turn off annoying sounds
@@ -42,16 +42,16 @@ set novisualbell
 set t_vb=
 
 " Don't display toolbar
-set guioptions-=T 
+set guioptions-=T
 
 " Switch between buffers without saving
-set hidden 
+set hidden
 
 " Set a different font from the default
-set guifont=Ubuntu\ Mono\ 14
+set guifont=Roboto\ Mono\ 11
 
 " Split windows below the current window.
-set splitbelow 
+set splitbelow
 
 " Map commands ----------------------------------------------------------------------------------------- "
 
@@ -100,7 +100,6 @@ filetype off                  " required
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 " alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
 
 " let Vundle manage Vundle, required
 Plugin 'gmarik/Vundle.vim'
@@ -109,7 +108,6 @@ Plugin 'L9'
 Plugin 'scrooloose/nerdtree'
 Plugin 'ervandew/supertab'
 Plugin 'mattn/emmet-vim'
-"Plugin 'bling/vim-airline'
 Plugin 'tpope/vim-surround'
 Plugin 'matchit.zip'
 Plugin 'FuzzyFinder'
@@ -118,6 +116,7 @@ Plugin 'justinmk/vim-sneak'
 Plugin 'tpope/vim-fugitive'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'altercation/vim-colors-solarized'
+Plugin 'ntpeters/vim-better-whitespace'
 
 " Track the engine.
 Plugin 'SirVer/ultisnips'
@@ -137,10 +136,29 @@ filetype plugin indent on    " required
 " Colour scheme
 syntax on
 set background=dark
-colorscheme solarized
+
+if has ("gui_running")
+	"colorscheme solarized
+	colorscheme xoria256
+
+	" Hide scrollbars
+	set guioptions-=R
+	set guioptions-=r
+	set guioptions-=l
+	set guioptions-=L
+	set guioptions-=R
+endif
+
 highlight Normal ctermbg=NONE
 highlight nonText ctermbg=NONE
 
+" Remap Emmet
+"let g:user_emmet_expandabbr_key='<Tab>'
+"imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
+
 " NERDTree settings
 nmap \n :NERDTreeToggle<CR>
+
+" Fuzzy Finder
+map <C-p> :FufBuffer<CR>
 

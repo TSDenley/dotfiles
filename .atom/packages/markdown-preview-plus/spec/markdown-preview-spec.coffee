@@ -5,6 +5,8 @@ wrench = require 'wrench'
 MarkdownPreviewView = require '../lib/markdown-preview-view'
 {$} = require 'atom-space-pen-views'
 
+require './spec-helper'
+
 describe "Markdown preview plus package", ->
   [workspaceElement, preview] = []
 
@@ -24,6 +26,11 @@ describe "Markdown preview plus package", ->
 
     waitsForPromise ->
       atom.packages.activatePackage('language-gfm')
+
+  afterEach ->
+    if preview instanceof MarkdownPreviewView
+      preview.destroy()
+    preview = null
 
   expectPreviewInSplitPane = ->
     runs ->
@@ -59,12 +66,14 @@ describe "Markdown preview plus package", ->
         runs -> atom.commands.dispatch workspaceElement, 'markdown-preview-plus:toggle'
         expectPreviewInSplitPane()
 
+    # https://github.com/atom/markdown-preview/issues/28
     describe "when the path contains a space", ->
       it "renders the preview", ->
         waitsForPromise -> atom.workspace.open("subdir/file with space.md")
         runs -> atom.commands.dispatch workspaceElement, 'markdown-preview-plus:toggle'
         expectPreviewInSplitPane()
 
+    # https://github.com/atom/markdown-preview/issues/29
     describe "when the path contains accented characters", ->
       it "renders the preview", ->
         waitsForPromise -> atom.workspace.open("subdir/áccéntéd.md")
@@ -77,12 +86,45 @@ describe "Markdown preview plus package", ->
       runs -> atom.commands.dispatch workspaceElement, 'markdown-preview-plus:toggle'
       expectPreviewInSplitPane()
 
-    it "closes the existing preview when toggle is triggered a second time on the editor", ->
+    it "closes the existing preview when toggle is triggered a second time on the editor and when the preview is its panes active item", ->
       atom.commands.dispatch workspaceElement, 'markdown-preview-plus:toggle'
 
       [editorPane, previewPane] = atom.workspace.getPanes()
       expect(editorPane.isActive()).toBe true
       expect(previewPane.getActiveItem()).toBeUndefined()
+
+    it "activates the existing preview when toggle is triggered a second time on the editor and when the preview is not its panes active item #nottravis", ->
+      [editorPane, previewPane] = atom.workspace.getPanes()
+
+      editorPane.activate()
+      waitsForPromise -> atom.workspace.open("subdir/simple.md")
+      runs -> atom.commands.dispatch workspaceElement, 'markdown-preview-plus:toggle'
+
+      waitsFor "second markdown preview to be created", ->
+        previewPane.getItems().length is 2
+
+      waitsFor "second markdown preview to be activated", ->
+        previewPane.getActiveItemIndex() is 1
+
+      runs ->
+        preview = previewPane.getActiveItem()
+        expect(preview).toBeInstanceOf(MarkdownPreviewView)
+        expect(preview.getPath()).toBe editorPane.getActiveItem().getPath()
+        expect(preview.getPath()).toBe atom.workspace.getActivePaneItem().getPath()
+
+        editorPane.activate()
+        editorPane.activateItemAtIndex(0)
+
+        atom.commands.dispatch workspaceElement, 'markdown-preview-plus:toggle'
+
+      waitsFor "first preview to be activated", ->
+        previewPane.getActiveItemIndex() is 0
+
+      runs ->
+        preview = previewPane.getActiveItem()
+        expect(previewPane.getItems().length).toBe(2)
+        expect(preview.getPath()).toBe editorPane.getActiveItem().getPath()
+        expect(preview.getPath()).toBe atom.workspace.getActivePaneItem().getPath()
 
     it "closes the existing preview when toggle is triggered on it and it has focus", ->
       [editorPane, previewPane] = atom.workspace.getPanes()
@@ -172,34 +214,29 @@ describe "Markdown preview plus package", ->
           waitsFor ->
             preview.text().indexOf("ch ch changes") >= 0
 
-    # Conversion of `<pre>` to `<atom-text-editor>` was introduced in 090fb1f
-    # upstream however before signing off on this in MPP it must be verified that
-    # this does not muck up the DOM update by diff. Restore this spec if/when that
-    # verification is completed.
-    #
-    # describe "when a new grammar is loaded", ->
-    #   it "re-renders the preview", ->
-    #     atom.workspace.getActiveTextEditor().setText """
-    #       ```javascript
-    #       var x = y;
-    #       ```
-    #     """
-    #
-    #     waitsFor "markdown to be rendered after its text changed", ->
-    #       preview.find("atom-text-editor").data("grammar") is "text plain null-grammar"
-    #
-    #     grammarAdded = false
-    #     runs ->
-    #       atom.grammars.onDidAddGrammar -> grammarAdded = true
-    #
-    #     waitsForPromise ->
-    #       expect(atom.packages.isPackageActive('language-javascript')).toBe false
-    #       atom.packages.activatePackage('language-javascript')
-    #
-    #     waitsFor "grammar to be added", -> grammarAdded
-    #
-    #     waitsFor "markdown to be rendered after grammar was added", ->
-    #       preview.find("atom-text-editor").data("grammar") isnt "source js"
+    describe "when a new grammar is loaded", ->
+      it "re-renders the preview", ->
+        atom.workspace.getActiveTextEditor().setText """
+          ```javascript
+          var x = y;
+          ```
+        """
+
+        waitsFor "markdown to be rendered after its text changed", ->
+          preview.find("atom-text-editor").data("grammar") is "text plain null-grammar"
+
+        grammarAdded = false
+        runs ->
+          atom.grammars.onDidAddGrammar -> grammarAdded = true
+
+        waitsForPromise ->
+          expect(atom.packages.isPackageActive('language-javascript')).toBe false
+          atom.packages.activatePackage('language-javascript')
+
+        waitsFor "grammar to be added", -> grammarAdded
+
+        waitsFor "markdown to be rendered after grammar was added", ->
+          preview.find("atom-text-editor").data("grammar") isnt "source js"
 
   describe "when the markdown preview view is requested by file URI", ->
     it "opens a preview editor and watches the file for changes", ->
@@ -240,13 +277,15 @@ describe "Markdown preview plus package", ->
       runs ->
         expect(preview.getTitle()).toBe 'file.markdown Preview'
         preview.onDidChangeTitle(titleChangedCallback)
-        fs.renameSync(atom.workspace.getActiveTextEditor().getPath(), path.join(path.dirname(atom.workspace.getActiveTextEditor().getPath()), 'file2.md'))
+        filePath = atom.workspace.getActiveTextEditor().getPath()
+        fs.renameSync(filePath, path.join(path.dirname(filePath), 'file2.md'))
 
       waitsFor ->
         preview.getTitle() is "file2.md Preview"
 
       runs ->
         expect(titleChangedCallback).toHaveBeenCalled()
+        preview.destroy()
 
   describe "when the URI opened does not have a markdown-preview-plus protocol", ->
     it "does not throw an error trying to decode the URI (regression)", ->
@@ -264,17 +303,15 @@ describe "Markdown preview plus package", ->
       runs ->
         atom.commands.dispatch workspaceElement, 'markdown-preview-plus:copy-html'
         expect(atom.clipboard.read()).toBe """
-          <div><p><em>italic</em></p>
+          <p><em>italic</em></p>
           <p><strong>bold</strong></p>
           <p>encoding \u2192 issue</p>
-          </div>
         """
 
         atom.workspace.getActiveTextEditor().setSelectedBufferRange [[0, 0], [1, 0]]
         atom.commands.dispatch workspaceElement, 'markdown-preview-plus:copy-html'
         expect(atom.clipboard.read()).toBe """
-          <div><p><em>italic</em></p>
-          </div>
+          <p><em>italic</em></p>
         """
 
     describe "code block tokenization", ->
@@ -314,6 +351,91 @@ describe "Markdown preview plus package", ->
         it "detects and styles the block", ->
           expect(preview.find("pre.lang-javascript")).toHaveClass 'editor-colors'
 
+  describe "when main::copyHtml() is called directly", ->
+    mpp = null
+
+    beforeEach ->
+      mpp = atom.packages.getActivePackage('markdown-preview-plus').mainModule
+
+    it "copies the HTML to the clipboard by default", ->
+      waitsForPromise ->
+        atom.workspace.open("subdir/simple.md")
+
+      runs ->
+        mpp.copyHtml()
+        expect(atom.clipboard.read()).toBe """
+          <p><em>italic</em></p>
+          <p><strong>bold</strong></p>
+          <p>encoding \u2192 issue</p>
+        """
+
+        atom.workspace.getActiveTextEditor().setSelectedBufferRange [[0, 0], [1, 0]]
+        mpp.copyHtml()
+        expect(atom.clipboard.read()).toBe """
+          <p><em>italic</em></p>
+        """
+
+    it "passes the HTML to a callback if supplied as the first argument", ->
+      waitsForPromise ->
+        atom.workspace.open("subdir/simple.md")
+
+      runs ->
+        expect(mpp.copyHtml( (html) -> html )).toBe """
+          <p><em>italic</em></p>
+          <p><strong>bold</strong></p>
+          <p>encoding \u2192 issue</p>
+        """
+
+        atom.workspace.getActiveTextEditor().setSelectedBufferRange [[0, 0], [1, 0]]
+        expect(mpp.copyHtml( (html) -> html )).toBe """
+          <p><em>italic</em></p>
+        """
+
+    describe "when LaTeX rendering is enabled by default", ->
+      beforeEach ->
+        spyOn(atom.clipboard, 'write').andCallThrough()
+
+        waitsFor "LaTeX rendering to be enabled", ->
+          atom.config.set 'markdown-preview-plus.enableLatexRenderingByDefault', true
+
+        waitsForPromise ->
+          atom.workspace.open("subdir/simple.md")
+
+        runs ->
+          atom.workspace.getActiveTextEditor().setText '$$\\int_3^4$$'
+
+      it "copies the HTML with maths blocks as svg's to the clipboard by default", ->
+        mpp.copyHtml()
+
+        waitsFor "atom.clipboard.write to have been called", ->
+          atom.clipboard.write.callCount is 1
+
+        runs ->
+          clipboard = atom.clipboard.read()
+          expect(clipboard.match(/MathJax\_SVG\_Hidden/).length).toBe(1)
+          expect(clipboard.match(/class\=\"MathJax\_SVG\"/).length).toBe(1)
+
+      it "scales the svg's if the scaleMath parameter is passed", ->
+        mpp.copyHtml(null, 200)
+
+        waitsFor "atom.clipboard.write to have been called", ->
+          atom.clipboard.write.callCount is 1
+
+        runs ->
+          clipboard = atom.clipboard.read()
+          expect(clipboard.match(/font\-size\: 200%/).length).toBe(1)
+
+      it "passes the HTML to a callback if supplied as the first argument", ->
+        html = null
+        mpp.copyHtml (proHTML) ->
+          html = proHTML
+
+        waitsFor "markdown to be parsed and processed by MathJax", -> html?
+
+        runs ->
+          expect(html.match(/MathJax\_SVG\_Hidden/).length).toBe(1)
+          expect(html.match(/class\=\"MathJax\_SVG\"/).length).toBe(1)
+
   describe "sanitization", ->
     it "removes script tags and attributes that commonly contain inline scripts", ->
       waitsForPromise -> atom.workspace.open("subdir/evil.md")
@@ -322,12 +444,12 @@ describe "Markdown preview plus package", ->
 
       runs ->
         expect($(preview[0]).find("div.update-preview").html()).toBe """
-          <div><p>hello</p>
-          <p></p>
-          <p>
+          <p>hello</p>
+
+
+          <p>sad
           <img>
           world</p>
-          </div>
         """
 
     it "remove the first <!doctype> tag at the beginning of the file", ->
@@ -337,9 +459,8 @@ describe "Markdown preview plus package", ->
 
       runs ->
         expect($(preview[0]).find("div.update-preview").html()).toBe """
-          <div><p>content
+          <p>content
           &lt;!doctype html&gt;</p>
-          </div>
         """
 
   describe "when the markdown contains an <html> tag", ->
@@ -348,23 +469,15 @@ describe "Markdown preview plus package", ->
       runs -> atom.commands.dispatch workspaceElement, 'markdown-preview-plus:toggle'
       expectPreviewInSplitPane()
 
-      runs -> expect($(preview[0]).find("div.update-preview").html()).toBe """
-        <div>content
-        </div>
-      """
+      runs -> expect($(preview[0]).find("div.update-preview").html()).toBe "content"
 
-  # Conversion of `<pre>` to `<atom-text-editor>` was introduced in 090fb1f
-  # upstream however before signing off on this in MPP it must be verified that
-  # this does not muck up the DOM update by diff. Restore this spec if/when that
-  # verification is completed.
-  #
-  # describe "when the markdown contains a <pre> tag", ->
-  #   it "does not throw an exception", ->
-  #     waitsForPromise -> atom.workspace.open("subdir/pre-tag.md")
-  #     runs -> atom.commands.dispatch workspaceElement, 'markdown-preview-plus:toggle'
-  #     expectPreviewInSplitPane()
-  #
-  #     runs -> expect(preview.find('atom-text-editor')).toExist()
+  describe "when the markdown contains a <pre> tag", ->
+    it "does not throw an exception", ->
+      waitsForPromise -> atom.workspace.open("subdir/pre-tag.md")
+      runs -> atom.commands.dispatch workspaceElement, 'markdown-preview-plus:toggle'
+      expectPreviewInSplitPane()
+
+      runs -> expect(preview.find('atom-text-editor')).toExist()
 
   # WARNING If focus is given to this spec alone your `config.cson` may be
   # overwritten. Please ensure that you have yours backed up :D

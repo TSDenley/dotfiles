@@ -49,9 +49,6 @@ plugins=(git cp atom sublime npm nvm bower heroku rsync ubuntu zsh_reload web-se
 
 # User configuration
 
-### PATH ####
-# PATH=$HOME/bin:/opt/lampp/bin:$PATH
-
 source $ZSH/oh-my-zsh.sh
 
 # You may need to manually set your language environment
@@ -71,19 +68,24 @@ source $ZSH/oh-my-zsh.sh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 
 
-alias zshcfg="atom ~/.zshrc"
-alias vimcfg="vim ~/.vimrc"
+alias zshcfg='vim ~/.zshrc'
+alias zc='vim ~/.zshrc'
+alias zs='source ~/.zshrc'
+alias vimcfg='vim ~/.vimrc'
+
+alias m_packages='cd ~/.meteor/packages/'
 
 alias vundle_install="vim +PluginInstall +qall"
 
-alias open="nautilus"
+alias open='nautilus'
+
+alias pserver='python -m SimpleHTTPServer'
 
 #### GIT ####
 alias gs='git status'
 alias ga.='git add .'
 alias gau='git update-index --assume-unchanged'
 alias gpl='git pull'
-alias gm='git merge --no-ff'
 alias gl='git log'
 
 # 'One line' formated log
@@ -100,12 +102,29 @@ alias lampp='sudo /opt/lampp/lampp '
 
 alias htdocs='cd /opt/lampp/htdocs/'
 alias matt='cd /opt/lampp/htdocs/matt/'
+alias cdtnd='cd /opt/lampp/htdocs/matt/natural-dispensary/'
+alias cdnc='cd /opt/lampp/htdocs/matt/natural-centre/'
+alias cdrev='cd /opt/lampp/htdocs/matt/revolution/'
+alias cdlnw='cd /opt/lampp/htdocs/matt/lewis-and-wood/'
+alias cdhilles='cd /opt/lampp/htdocs/matt/hilles-house-wp/'
 
-#alias php='/opt/lampp/bin/php'
-#alias mysql='/opt/lampp/bin/mysql'
-#alias mysqldump='/opt/lampp/bin/mysqldump'
+export PATH="/opt/lampp/bin:$PATH"
 
-# export PATH="/opt/lampp/bin:$PATH"
+
+####
+# Update current directory perms and all sub-dirs/files recursively
+# (intended for WP uploads dir)
+####
+function uploads_file_perms () {
+  echo "This will update the perms of the current directory and it's children."
+
+  sudo chgrp -R daemon .
+  sudo chmod g+ws .
+
+  find . -type d -exec chmod g+ws {} \;
+  find . -type f -exec chmod 664 {} \;
+}
+
 
 #### Drush ####
 # export DRUSH_PHP='/opt/lampp/bin/php'
@@ -114,11 +133,29 @@ alias dcca='drush cc all'
 #### Composer ####
 export PATH="$HOME/.composer/vendor/bin:$PATH"
 
+
 #### Node Version Manager ####
-export NVM_DIR="/home/tom/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
+
+export NVM_NODEJS_ORG_MIRROR=http://nodejs.org/dist
+
 
 #### pyenv ####
 PYENV_ROOT="$HOME/.pyenv"
 PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
+
+
+#### Android SDK ####
+export ANDROID_HOME="$HOME/Android/Sdk"
+export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
+
+#### Go ####
+export GOPATH="$HOME/gopath"
+export PATH="$GOPATH:$GOPATH/bin:$PATH"
+
+
+#### Docker ####
+alias dcu="docker-compose up"
+

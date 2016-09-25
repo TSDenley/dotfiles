@@ -25,3 +25,21 @@
 		* $1
 		*/$2
 	"""
+
+# Define Wordpress URL (overrides value in options table)
+'.source.php':
+  'WP site/home URL':
+    'prefix': 'wp_url'
+    'body': """
+      define( 'WP_SITEURL', 'http://$1' );
+      define( 'WP_HOME', 'http://$1' );$2
+    """
+
+'.text.php, .source.php':
+  'Preformatted var_dump()':
+    'prefix': 'predump'
+    'body': """
+      echo '<pre>';
+      var_dump( $1 );
+      echo '</pre>';$2
+    """
