@@ -45,7 +45,7 @@ HIST_STAMPS="yyyy/mm/dd"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git cp atom sublime npm nvm bower heroku rsync ubuntu zsh_reload web-search meteor)
+plugins=(git npm nvm bower rsync zsh_reload web-search docker)
 
 # User configuration
 
@@ -108,7 +108,7 @@ alias cdrev='cd /opt/lampp/htdocs/matt/revolution/'
 alias cdlnw='cd /opt/lampp/htdocs/matt/lewis-and-wood/'
 alias cdhilles='cd /opt/lampp/htdocs/matt/hilles-house-wp/'
 
-export PATH="/opt/lampp/bin:$PATH"
+# export PATH="/opt/lampp/bin:$PATH"
 
 
 ####

@@ -1,21 +1,52 @@
 {
-  "name": "Stylus",
-  "version": "3.0.0",
+  "_args": [
+    [
+      {
+        "raw": "/tmp/d-11692-13898-4hjxlr/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/tmp/d-11692-13898-4hjxlr/package.tgz",
+        "spec": "/tmp/d-11692-13898-4hjxlr/package.tgz",
+        "type": "local"
+      },
+      "/tmp/apm-install-dir-11692-13898-1yhzbjs"
+    ]
+  ],
+  "_from": "../d-11692-13898-4hjxlr/package.tgz",
+  "_id": "Stylus@3.1.0",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/Stylus",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/tmp/d-11692-13898-4hjxlr/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/tmp/d-11692-13898-4hjxlr/package.tgz",
+    "spec": "/tmp/d-11692-13898-4hjxlr/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-11692-13898-4hjxlr/package.tgz",
+  "_shasum": "67f598ef65cf92066ce8ce99c53357e5ffc51861",
+  "_shrinkwrap": null,
+  "_spec": "/tmp/d-11692-13898-4hjxlr/package.tgz",
+  "_where": "/tmp/apm-install-dir-11692-13898-1yhzbjs",
   "author": {
     "name": "Matthew Harrison-Jones"
   },
-  "description": "Adds syntax highlighting and snippets to Stylus files in Atom.",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/matthojo/language-stylus.git"
-  },
-  "license": "MIT",
-  "engines": {
-    "atom": ">0.50.0"
-  },
-  "dependencies": {},
   "bugs": {
     "url": "https://github.com/matthojo/language-stylus/issues"
+  },
+  "dependencies": {},
+  "description": "Adds syntax highlighting and snippets to Stylus files in Atom.",
+  "devDependencies": {},
+  "engines": {
+    "atom": ">0.50.0"
   },
   "homepage": "https://github.com/matthojo/language-stylus",
   "keywords": [
@@ -23,10 +54,14 @@
     "language",
     "atom"
   ],
+  "license": "MIT",
+  "name": "Stylus",
+  "optionalDependencies": {},
   "readme": "# Stylus language support in Atom (with extra snippets)\n\nAdds syntax highlighting and snippets to Stylus files in Atom.\n\nOriginally [converted](http://atom.io/docs/latest/converting-a-text-mate-bundle) from the [Stylus TextMate bundle](https://github.com/vgrichina/Stylus.tmbundle) and [Stylus Plus bundle](https://github.com/jackbrewer/stylus-plus.tmbundle).\n\nMassive hat-tip to https://github.com/billymoon/Stylus for a lot of the regex values.\n\nContributions are greatly appreciated. Please fork this repository and open a pull request to add snippets, make grammar tweaks, etc.\n",
   "readmeFilename": "README.md",
-  "_id": "Stylus@3.0.0",
-  "_shasum": "a96013c68fbcd7f5b6b270f17eab397ba0d864ab",
-  "_resolved": "file:../d-116121-18713-aqgj7d/package.tgz",
-  "_from": "../d-116121-18713-aqgj7d/package.tgz"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthojo/language-stylus.git"
+  },
+  "version": "3.1.0"
 }

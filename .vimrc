@@ -48,7 +48,7 @@ set guioptions-=T
 set hidden
 
 " Set a different font from the default
-set guifont=Roboto\ Mono\ 11
+set guifont=Roboto\ Mono\ 10
 
 " Split windows below the current window.
 set splitbelow

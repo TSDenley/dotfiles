@@ -1,10 +1,13 @@
 /** @babel */
 /** @jsx etch.dom */
 
+import { CompositeDisposable } from 'atom';
 import etch from 'etch';
 import { EDIT_URI } from './view-uri';
 import manager from '../Manager';
 import Project from '../models/Project';
+
+const disposables = new CompositeDisposable();
 
 etch.setScheduler(atom.views);
 
@@ -14,15 +17,63 @@ export default class EditView {
     this.children = children;
     etch.initialize(this);
 
+    this.storeFocusedElement();
+
+    this.setFocus();
+
     this.element.addEventListener('click', (event) => {
       if (event.target === this.refs.save) {
         this.saveProject();
       }
     });
 
-    atom.commands.add(this.element, {
+    disposables.add(atom.commands.add(this.element, {
       'core:save': () => this.saveProject(),
-    });
+      'core:confirm': () => this.saveProject(),
+    }));
+
+    disposables.add(atom.commands.add('atom-workspace', {
+      'core:cancel': () => this.close(),
+    }));
+  }
+
+  getFocusElement() {
+    return this.refs.title;
+  }
+
+  setFocus() {
+    const focusElement = this.getFocusElement();
+
+    if (focusElement) {
+      setTimeout(() => {
+        focusElement.focus();
+      }, 0);
+    }
+  }
+
+  storeFocusedElement() {
+    this.previouslyFocusedElement = document.activeElement;
+  }
+
+  restoreFocus() {
+    if (this.previouslyFocusedElement) {
+      this.previouslyFocusedElement.focus();
+    }
+  }
+
+  close() {
+    this.destroy();
+  }
+
+  async destroy() {
+    const pane = atom.workspace.paneForURI(EDIT_URI);
+    if (pane) {
+      const item = pane.itemForURI(EDIT_URI);
+      pane.destroyItem(item);
+    }
+
+    disposables.dispose();
+    await etch.destroy(this);
   }
 
   saveProject() {
@@ -35,6 +86,13 @@ export default class EditView {
     };
 
     manager.saveProject(projectProps);
+    let message = `${projectProps.title} has been saved.`;
+    if (this.props.project) {
+      message = `${this.props.project.title} has been update.`;
+    }
+    atom.notifications.addSuccess(message);
+
+    this.close();
   }
 
   update(props, children) {
@@ -64,7 +122,7 @@ export default class EditView {
 
     if (this.props.project) {
       const projectProps = this.props.project.getProps();
-      props = Object.assign(props, projectProps);
+      props = Object.assign({}, props, projectProps);
     }
 
     const wrapperStyle = {
@@ -78,16 +136,13 @@ export default class EditView {
     };
 
     return (
-      <div
-        style={wrapperStyle}
-        className="project-manager-edit padded native-key-bindings"
-      >
+      <div style={wrapperStyle} className="project-manager-edit padded native-key-bindings">
         <div style={style}>
           <h1 className="block section-heading">{this.getTitle()}</h1>
 
           <div className="block">
             <label className="input-label">Title</label>
-            <input ref="title" type="text" className="input-text" value={props.title} tabIndex="-1" />
+            <input ref="title" type="text" className="input-text" value={props.title} tabIndex="0" />
           </div>
 
           <div className="block">
@@ -107,14 +162,14 @@ export default class EditView {
               id="devMode"
               name="devMode"
               type="checkbox"
-              className="input-checkbox"
+              className="input-toggle"
               checked={props.devMode}
               tabIndex="3"
               />
           </div>
 
           <div className="block" style={{ textAlign: 'right' }}>
-            <button ref="save" className="btn btn-primary">Save</button>
+            <button ref="save" className="btn btn-primary" tabIndex="4">Save</button>
           </div>
         </div>
       </div>
