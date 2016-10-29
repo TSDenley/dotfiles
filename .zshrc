@@ -84,6 +84,7 @@ alias pserver='python -m SimpleHTTPServer'
 #### GIT ####
 alias gs='git status'
 alias ga.='git add .'
+alias gaaac='git add .; git commit' # Add all and commit
 alias gau='git update-index --assume-unchanged'
 alias gpl='git pull'
 alias gl='git log'

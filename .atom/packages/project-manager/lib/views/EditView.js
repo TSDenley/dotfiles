@@ -3,6 +3,8 @@
 
 import { CompositeDisposable } from 'atom';
 import etch from 'etch';
+import changeCase from 'change-case';
+import path from 'path';
 import { EDIT_URI } from './view-uri';
 import manager from '../Manager';
 import Project from '../models/Project';
@@ -84,11 +86,18 @@ export default class EditView {
       icon: this.refs.icon.value,
       devMode: this.refs.devMode.checked,
     };
+    let message = `${projectProps.title} has been saved.`;
+
+    if (this.props.project) {
+      // Paths should already be up-to-date, so use
+      // the current paths as to not break possible relative paths.
+      projectProps.paths = this.props.project.getProps().paths;
+    }
 
     manager.saveProject(projectProps);
-    let message = `${projectProps.title} has been saved.`;
+
     if (this.props.project) {
-      message = `${this.props.project.title} has been update.`;
+      message = `${this.props.project.title} has been updated.`;
     }
     atom.notifications.addSuccess(message);
 
@@ -108,19 +117,24 @@ export default class EditView {
     return 'Save Project';
   }
 
-  getIconName() {
+  getIconName() { // eslint-disable-line class-methods-use-this
     return 'gear';
   }
 
-  getURI() {
+  getURI() { // eslint-disable-line class-methods-use-this
     return EDIT_URI;
   }
 
   render() {
     const defaultProps = Project.defaultProps;
+    const rootPath = atom.project.getPaths()[0];
     let props = defaultProps;
 
-    if (this.props.project) {
+    if (atom.config.get('project-manager.prettifyTitle')) {
+      props.title = changeCase.titleCase(path.basename(rootPath));
+    }
+
+    if (this.props.project && this.props.project.source === 'file') {
       const projectProps = this.props.project.getProps();
       props = Object.assign({}, props, projectProps);
     }
@@ -158,13 +172,13 @@ export default class EditView {
           <div className="block">
             <label className="input-label" for="devMode">Development mode</label>
               <input
-              ref="devMode"
-              id="devMode"
-              name="devMode"
-              type="checkbox"
-              className="input-toggle"
-              checked={props.devMode}
-              tabIndex="3"
+                ref="devMode"
+                id="devMode"
+                name="devMode"
+                type="checkbox"
+                className="input-toggle"
+                checked={props.devMode}
+                tabIndex="3"
               />
           </div>
 
