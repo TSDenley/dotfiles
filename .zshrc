@@ -5,7 +5,7 @@ export ZSH=$HOME/.oh-my-zsh
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="tuts+"
+ZSH_THEME="avit"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -45,7 +45,7 @@ HIST_STAMPS="yyyy/mm/dd"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git npm nvm bower rsync zsh_reload web-search docker)
+plugins=(git rsync sudo)
 
 # User configuration
 
@@ -67,9 +67,13 @@ source $ZSH/oh-my-zsh.sh
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 
+#### Directory ls colours ####
+LS_COLORS=$LS_COLORS:'di=0;34:ln=0;35:ex=0;31'
+export LS_COLORS
 
-alias zshcfg='vim ~/.zshrc'
-alias zc='vim ~/.zshrc'
+alias zshcfg='atom ~/.zshrc'
+alias zc='atom ~/.zshrc'
+alias ohmyzsh='atom ~/.oh-my-zsh/'
 alias zs='source ~/.zshrc'
 alias vimcfg='vim ~/.vimrc'
 
@@ -100,17 +104,8 @@ alias grm='git rm $(git ls-files --deleted)'
 
 #### XAMPP ####
 alias lampp='sudo /opt/lampp/lampp '
-
 alias htdocs='cd /opt/lampp/htdocs/'
-alias matt='cd /opt/lampp/htdocs/matt/'
-alias cdtnd='cd /opt/lampp/htdocs/matt/natural-dispensary/'
-alias cdnc='cd /opt/lampp/htdocs/matt/natural-centre/'
-alias cdrev='cd /opt/lampp/htdocs/matt/revolution/'
-alias cdlnw='cd /opt/lampp/htdocs/matt/lewis-and-wood/'
-alias cdhilles='cd /opt/lampp/htdocs/matt/hilles-house-wp/'
-
 # export PATH="/opt/lampp/bin:$PATH"
-
 
 ####
 # Update current directory perms and all sub-dirs/files recursively
@@ -126,7 +121,6 @@ function uploads_file_perms () {
   find . -type f -exec chmod 664 {} \;
 }
 
-
 #### Drush ####
 # export DRUSH_PHP='/opt/lampp/bin/php'
 alias dcca='drush cc all'
@@ -134,29 +128,34 @@ alias dcca='drush cc all'
 #### Composer ####
 export PATH="$HOME/.composer/vendor/bin:$PATH"
 
-
 #### Node Version Manager ####
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
 
 export NVM_NODEJS_ORG_MIRROR=http://nodejs.org/dist
 
-
 #### pyenv ####
 PYENV_ROOT="$HOME/.pyenv"
 PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
+export JAVA_HOME=$(update-alternatives --query javac | sed -n -e 's/Best: *\(.*\)\/bin\/javac/\1/p')
 
 #### Android SDK ####
 export ANDROID_HOME="$HOME/Android/Sdk"
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
 
+SCALA_HOME="/usr/local/share/scala"
+export PATH="$PATH:$SCALA_HOME/bin"
+
 #### Go ####
 export GOPATH="$HOME/gopath"
 export PATH="$GOPATH:$GOPATH/bin:$PATH"
 
+###-tns-completion-###
+if [ -f /home/tom/.tnsrc ]; then
+    source /home/tom/.tnsrc
+fi
 
-#### Docker ####
-alias dcu="docker-compose up"
 
+alias update="sudo apt update && sudo apt upgrade -y"
