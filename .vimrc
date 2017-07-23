@@ -1,8 +1,10 @@
-" Setting ---------------------------------------------------------------------------------------------------"
+" Setting --------------------------------------------------------
 
-set nocompatible " This setting prevents vim from emulating the original vi's bugs and limitations.
+" This setting prevents vim from emulating the original vi's bugs and limitations.
+set nocompatible 
 
-set noswapfile " Disable swapfile creation (*.swp files)
+" Disable swapfile creation (*.swp files)
+set noswapfile 
 
 filetype plugin on
 
@@ -17,14 +19,14 @@ set wildmode=longest,list
 set hlsearch " Highlight Searching
 set laststatus=2 " Always show the status line
 
-" Tab & indent settings
+" Tab & indent settings -------------------------------------------
 set shiftwidth=2
 set tabstop=2
 "set expandtab " Spaces for tabs
 set smarttab
 set smartindent "Auto adds and indent after a '{'
 set autoindent
-set copyindent "copy the previous indentation on autoindenting
+" set copyindent "copy the previous indentation on autoindenting
 
 " Line numbers
 "set number
@@ -41,141 +43,52 @@ set noerrorbells
 set novisualbell
 set t_vb=
 
-" Don't display toolbar
-set guioptions-=T
-
 " Switch between buffers without saving
 set hidden
-
-" Set a different font from the default
-set guifont=Roboto\ Mono\ 10
 
 " Split windows below the current window.
 set splitbelow
 
-" Map commands ----------------------------------------------------------------------------------------- "
+" Map commands ----------------------------------------------------
 
 " Be quicker - change : for space
 nmap <space> :
 " Quicker switching to command mode
 imap jj <Esc>
 
-" Quicker editing of vimrc file...
-nmap \v :e $MYVIMRC<CR>
-" ...and zshrc
-nmap \z :e ~/.zshrc<CR>
 
-" Ctrl-s to save...
-nmap <C-s> :w<CR>
-" ...and in insert mode too
-imap <C-s> <Esc>:w<CR>a
+" Vundle plugin manager -------------------------------------------
 
-" Copy visual selection to system clipboard
-vmap \c <Esc>"+y
-
-"Shortcut to fold tags with leader (usually \) + ft
-nnoremap <leader>ft Vatzf
-
-" 'Bubble' single line of text
-" http://vimcasts.org/episodes/bubbling-text/
-nmap <C-Up> ddkP
-nmap <C-Down> ddp
-" 'Bubble' multiple lines
-vmap <C-Up> xkP`[V`]
-vmap <C-Down> xp`[V`]
-
-" Abrevations ---------------------------------------------------------------------------------------------"
-"In insert mode type 'lorem' and press space to expand to a full sentence...
-iab lorem Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-"...and 'llorem' for a full paragraph
-iab llorem Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-
-" Plugins ------------------------------------------------------------------------------------------------ "
-" Vundle plugin manager
-
-filetype off                  " required
+filetype off
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
 
 " let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
+Plugin 'VundleVim/Vundle.vim'
 
-Plugin 'L9'
-Plugin 'scrooloose/nerdtree'
-Plugin 'ervandew/supertab'
-Plugin 'mattn/emmet-vim'
+Plugin 'scrooloose/nerdtree' " File browser
+Plugin 'xuyuanp/nerdtree-git-plugin'
 Plugin 'tpope/vim-surround'
-Plugin 'matchit.zip'
-Plugin 'FuzzyFinder'
-Plugin 'pangloss/vim-javascript'
-Plugin 'justinmk/vim-sneak'
-Plugin 'tpope/vim-fugitive'
-Plugin 'flazz/vim-colorschemes'
-Plugin 'altercation/vim-colors-solarized'
-Plugin 'ntpeters/vim-better-whitespace'
-
-" Track the engine.
-Plugin 'SirVer/ultisnips'
-
-" Snippets are separated from the engine. Add this if you want them:
-Plugin 'honza/vim-snippets'
-
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+Plugin 'kien/ctrlp.vim' " Fuzzy finder Ctrl-p
+Plugin 'valloric/youcompleteme'
+Plugin 'mattn/emmet-vim'
+Plugin 'jiangmiao/auto-pairs'
+Plugin 'sjl/gundo.vim' " Git tree view
+Plugin 'airblade/vim-gitgutter'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
 
-" Colour scheme
-syntax on
-set background=dark
+" Emmet Ctrl-z,
+let g:user_emmet_leader_key='<C-z>'
 
-if has ("gui_running")
-	"colorscheme solarized
-	colorscheme xoria256
+" Nerd Tree Ctrl + n
+map <C-n> :NERDTreeToggle<CR>
 
-	" Hide scrollbars
-	set guioptions-=R
-	set guioptions-=r
-	set guioptions-=l
-	set guioptions-=L
-	set guioptions-=R
-endif
+" Gundo - Git tree view F5
+nnoremap <F5> :GundoToggle<CR>
 
-highlight Normal ctermbg=NONE
-highlight nonText ctermbg=NONE
-
-" Remap Emmet
-"let g:user_emmet_expandabbr_key='<Tab>'
-"imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
-
-" NERDTree settings
-nmap \n :NERDTreeToggle<CR>
-
-" Fuzzy Finder
-map <C-p> :FufBuffer<CR>
-
-""""""""""""""""""""""""""""""
-" => Status line
-""""""""""""""""""""""""""""""
-" Always show the status line
-set laststatus=2
-
-" Format the status line
-set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
-
-" Returns true if paste mode is enabled
-function! HasPaste()
-	  if &paste
-			return 'PASTE MODE  '
-		endif
-	return ''
-endfunction
 
