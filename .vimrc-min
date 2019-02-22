@@ -1,0 +1,53 @@
+" Setting --------------------------------------------------------
+
+" This setting prevents vim from emulating the original vi's bugs and limitations.
+set nocompatible 
+
+" Disable swapfile creation (*.swp files)
+set noswapfile 
+
+filetype plugin on
+
+" Search optoins
+set incsearch " Search as you type
+set ignorecase
+set smartcase
+set wildmode=longest,list
+set hlsearch " Highlight Searching
+set laststatus=2 " Always show the status line
+
+" Tab & indent settings -------------------------------------------
+set shiftwidth=2
+set tabstop=2
+set expandtab " Spaces for tabs
+set smarttab
+set smartindent "Auto adds and indent after a '{'
+set autoindent
+" set copyindent "copy the previous indentation on autoindenting
+
+" Line numbers
+"set number
+
+" Display last command
+set showcmd
+
+" set showmode " Show editing mode
+set showmode
+
+" Turn off annoying sounds
+set noerrorbells
+set novisualbell
+set t_vb=
+
+" Switch between buffers without saving
+set hidden
+
+" Split windows below the current window.
+set splitbelow
+
+" Map commands ----------------------------------------------------
+
+" Be quicker - change : for space
+nmap <space> :
+" Quicker switching to command mode
+imap jj <Esc>
