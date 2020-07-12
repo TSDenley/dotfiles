@@ -16,6 +16,9 @@ set wildmode=longest,list
 set hlsearch " Highlight Searching
 set laststatus=2 " Always show the status line
 
+" Set colour scheme (use one of the default ones)
+colorscheme desert
+
 " Tab & indent settings -------------------------------------------
 set shiftwidth=2
 set tabstop=2
