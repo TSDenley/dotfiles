@@ -20,8 +20,8 @@ set laststatus=2 " Always show the status line
 colorscheme desert
 
 " Tab & indent settings -------------------------------------------
-set shiftwidth=2
-set tabstop=2
+set shiftwidth=4
+set tabstop=4
 set expandtab " Spaces for tabs
 set smarttab
 set smartindent "Auto adds and indent after a '{'
